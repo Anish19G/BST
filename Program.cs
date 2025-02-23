@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 public class TreeNode 
 {
@@ -242,6 +243,47 @@ public class AVLTree
         return null;
     }
 
+    public List<TreeNode> SearchNodes(int requiredCount)
+    {
+        List<TreeNode> result = new List<TreeNode>();
+        InOrderTraversal(root, result, ref requiredCount);
+        return result;
+    }
+
+    private void InOrderTraversal(TreeNode node, List<TreeNode> result, ref int requiredCount)
+    {
+        if (node == null || requiredCount <= 0)
+            return;
+
+        InOrderTraversal(node.Left, result, ref requiredCount);
+
+        if (requiredCount > 0)
+        {
+            result.Add(node);
+            requiredCount--;
+        }
+
+        InOrderTraversal(node.Right, result, ref requiredCount);
+    }
+
+    public bool IsBalanced()
+    {
+        return IsBalanced(root);
+    }
+
+    private bool IsBalanced(TreeNode node)
+    {
+        if (node == null)
+            return true;
+
+        int balanceFactor = BalanceFactor(node);
+
+        if (Math.Abs(balanceFactor) > 1)
+            return false;
+
+        return IsBalanced(node.Left) && IsBalanced(node.Right);
+    }
+
     public void PrintTreeWithLines()
     {
         PrintTreeWithLines(root, 0, "");
@@ -272,13 +314,19 @@ class Program
     {
         AVLTree tree = new AVLTree();
 
-       // Insert nodes
-        tree.Insert(10, "Value10");
-        tree.Insert(20, "Value20");
-        tree.Insert(30, "Value30");
-        tree.Insert(40, "Value40");
-        tree.Insert(50, "Value50");
-        tree.Insert(25, "Value25");
+        for( int i = 0; i <= 500; i++)
+        {
+            tree.Insert(i, "Value" + i);
+        }
+
+    //    Insert nodes
+        // tree.Insert(10, "Value10");
+        // tree.Insert(20, "Value20");
+        // tree.Insert(30, "Value30");
+        // tree.Insert(40, "Value40");
+        // tree.Insert(50, "Value50");
+        // tree.Insert(25, "Value25");
+
 
         Console.WriteLine("Tree with proper lines after insertion:");
         tree.PrintTreeWithLines();
@@ -289,8 +337,32 @@ class Program
         tree.PrintTreeWithLines();
  
         // Delete a node
-        tree.Delete(20);
-        Console.WriteLine("\nTree with proper lines after deleting key 20:");
+
+        for( int i = 100; i <= 300; i++)
+        {
+            tree.Delete(i);
+        }
+        // tree.Delete(20);
+        // Console.WriteLine("\nTree with proper lines after deleting key 20:");
         tree.PrintTreeWithLines();
+
+        // Search for the required number of nodes
+        int requiredCount = 2;
+        List<TreeNode> nodes = tree.SearchNodes(requiredCount);
+        Console.WriteLine($"\nFirst {requiredCount} nodes in the tree:");
+        foreach (var node in nodes)
+        {
+            Console.WriteLine($"{node.Key} ({node.Value})");
+        }
+
+        // Search for nodes with keys 300 and 400
+        string value300 = tree.Search(300);
+        string value400 = tree.Search(400);
+        Console.WriteLine($"\nValue of node with key 300: {value300}");
+        Console.WriteLine($"\nValue of node with key 400: {value400}");
+
+        // Check if the tree is balanced
+        bool isBalanced = tree.IsBalanced();
+        Console.WriteLine($"\nIs the AVL tree balanced? {isBalanced}");
     }
 }
